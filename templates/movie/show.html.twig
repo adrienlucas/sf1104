@@ -1,9 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello MovieController!{% endblock %}
+{% block title %}{{ parent() }} - Movie detail{% endblock %}
 
 {% block body %}
-    <div>
-        Movie #{{ movie_id }}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">{{ movie.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ movie.release_date|date('F Y') }}</h6>
+            <p class="card-text">{{ movie.description }}</p>
+        </div>
     </div>
 {% endblock %}
