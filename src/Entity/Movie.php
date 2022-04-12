@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\MovieRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=MovieRepository::class)
@@ -19,6 +22,7 @@ class Movie
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Length(min=3)
      */
     private $title;
 
@@ -30,7 +34,7 @@ class Movie
     /**
      * @ORM\Column(type="date")
      */
-    private $release_date;
+    private $releaseDate;
 
     /**
      * @ORM\ManyToOne(targetEntity=Genre::class, inversedBy="movies")
@@ -68,12 +72,12 @@ class Movie
 
     public function getReleaseDate(): ?\DateTimeInterface
     {
-        return $this->release_date;
+        return $this->releaseDate;
     }
 
-    public function setReleaseDate(\DateTimeInterface $release_date): self
+    public function setReleaseDate(\DateTimeInterface $releaseDate): self
     {
-        $this->release_date = $release_date;
+        $this->releaseDate = $releaseDate;
 
         return $this;
     }

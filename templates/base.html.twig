@@ -14,6 +14,11 @@
     </head>
     <body>
         {{ include('navbar.html.twig') }}
+        {% for flashMessage in app.flashes('success') %}
+            <div class="alert alert-success" role="alert">
+                {{ flashMessage }}
+            </div>
+        {% endfor %}
 {#        {{ render(controller('App\\Controller\\HomepageController::menu')) }}#}
         {% block body %}{% endblock %}
 

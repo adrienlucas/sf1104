@@ -4,4 +4,9 @@
 
 {% block body %}
 Hello World !
+
+    Latest Movie :
+    <a href="{{ path('app_show_movie', {id: latestMovie.id}) }}">
+        {{ latestMovie.title }}
+    </a>
 {% endblock %}
