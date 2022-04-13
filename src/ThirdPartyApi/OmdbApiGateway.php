@@ -23,40 +23,29 @@ class OmdbApiGateway
 
     public function getPosterByMovieTitle(string $movieTitle): string
     {
-        $apiRequest = sprintf(
-            'http://www.omdbapi.com/?apikey=%s&t=%s',
-            $this->apiKey,
-            urlencode($movieTitle)
-        );
-
-        $apiResponse = $this->httpClient->request('GET', $apiRequest);
-        return $apiResponse->toArray()['Poster'] ?? '';
-//        return 'https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg';
+        return $this->requestApi('t', $movieTitle)['Poster'] ?? '';
     }
 
     public function searchMovieByTitle(string $movieTitle): array
     {
-        $apiRequest = sprintf(
-            'http://www.omdbapi.com/?apikey=%s&s=%s',
-            $this->apiKey,
-            urlencode($movieTitle)
-        );
-
-        $apiResponse = $this->httpClient->request('GET', $apiRequest);
-
-        return $apiResponse->toArray()['Search'];
+        return $this->requestApi('s', $movieTitle)['Search'];
     }
 
     public function getMovieByImdbId(string $imdbID)
     {
+        return $this->requestApi('i', $imdbID);
+    }
+
+    private function requestApi(string $parameterName, string $requestPayload)
+    {
 
         $apiRequest = sprintf(
-            'http://www.omdbapi.com/?apikey=%s&i=%s',
+            'http://www.omdbapi.com/?apikey=%s&%s=%s',
             $this->apiKey,
-            urlencode($imdbID)
+            $parameterName,
+            urlencode($requestPayload)
         );
 
-        $apiResponse = $this->httpClient->request('GET', $apiRequest);
-        return $apiResponse->toArray();
+        return $this->httpClient->request('GET', $apiRequest)->toArray();
     }
 }
