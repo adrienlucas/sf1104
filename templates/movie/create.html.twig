@@ -4,4 +4,22 @@
 
 {% block body %}
     {{ form(movie_creation_form) }}
+
+{#    {{ form_start(movie_creation_form) }} #}{# <form #}
+{#        {{ form_row(movie_creation_form.title) }} #}{# <input type=text #}
+{#        {{ form_row(movie_creation_form.description) }} #}{# <textarea #}
+{#        {{ form_row(movie_creation_form.isPublished) }} #}{# <checkbox #}
+
+{#    {{ form_end(movie_creation_form) }} #}{# </form #}
 {% endblock %}
+
+{#{% block javascripts %}#}
+{#    {{ parent() }}#}
+{#    <script>#}
+{#        $()({#}
+{#            $('#{{ movie_creation_form.isPublished.vars.id }}').click(function(){#}
+
+{#        });#}
+{#        });#}
+{#    </script>#}
+{#{% endblock %}#}
