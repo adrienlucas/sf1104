@@ -11,4 +11,7 @@
             <p class="card-text">{{ movie.description }}</p>
         </div>
     </div>
+    {% if is_granted('ROLE_ADMIN') %}
+        <button type="button" onclick="go to /movie/123/delete">Delete</button>
+    {% endif %}
 {% endblock %}

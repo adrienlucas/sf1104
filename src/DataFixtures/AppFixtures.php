@@ -4,25 +4,28 @@ namespace App\DataFixtures;
 
 use App\Entity\Genre;
 use App\Entity\Movie;
+use App\Entity\User;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AppFixtures extends Fixture
 {
     private $validator;
 
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(ValidatorInterface $validator, UserPasswordHasherInterface $hasher)
     {
         $this->validator = $validator;
+        $this->hasher = $hasher;
     }
 
     private function validation(object $subject)
     {
         $violationList = $this->validator->validate($subject);
-        if(!empty($violationList)) {
-            throw new \Exception((string) $violationList);
+        foreach($violationList as $violation) {
+            throw new \Exception((string) $violation);
         }
     }
 
@@ -38,7 +41,7 @@ class AppFixtures extends Fixture
         }
 
         $matrixMovie = new Movie();
-        $matrixMovie->setTitle('T');
+        $matrixMovie->setTitle('The Matrix');
         $matrixMovie->setDescription('Neo learns kung-fu');
         $matrixMovie->setReleaseDate(new \DateTime('1999-03-31'));
         $this->validation($matrixMovie);
@@ -68,6 +71,13 @@ class AppFixtures extends Fixture
         $actionGenre->setName('Action');
         $this->validation($actionGenre);
         $manager->persist($actionGenre);
+
+        $adrien = new User();
+        $adrien->setUsername('adrien');
+        $adrien->setPassword($this->hasher->hashPassword($adrien, '1234azerty'));
+        $adrien->setRoles(['ROLE_ADMIN']);
+
+        $manager->persist($adrien);
 
         $manager->flush();
     }
