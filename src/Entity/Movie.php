@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MovieRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Length;
@@ -10,6 +11,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=MovieRepository::class)
+ * @Assert\EnableAutoMapping()
  */
 class Movie
 {
@@ -22,7 +24,7 @@ class Movie
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Length(min=3)
+     * @Assert\Length(min=3)
      */
     private $title;
 
@@ -40,6 +42,16 @@ class Movie
      * @ORM\ManyToOne(targetEntity=Genre::class, inversedBy="movies")
      */
     private $genre;
+
+    public static function makeFromApiResponse(array $apiResult): self
+    {
+        $movie = new Movie();
+        $movie->setTitle($apiResult['Title']);
+        $movie->setDescription($apiResult['Plot']);
+        $movie->setReleaseDate(new DateTime(date('Y-m-d', strtotime($apiResult['Released']))));
+
+        return $movie;
+    }
 
     public function getId(): ?int
     {

@@ -46,9 +46,6 @@ class MovieController extends AbstractController
      */
     public function showMovie(Movie $movie): Response
     {
-        dump($_ENV['OMDB_API_KEY']);
-        dump($_SERVER['OMDB_API_KEY']);
-        dump(env('OMDB_API_KEY')->string());
         $poster = $this->omdbApiGateway->getPosterByMovieTitle($movie->getTitle());
         return $this->render('movie/show.html.twig', [
             'movie' => $movie,
