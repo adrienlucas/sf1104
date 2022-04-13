@@ -6,15 +6,29 @@ use App\Entity\Genre;
 use App\Entity\Movie;
 use App\Form\MovieType;
 use App\Repository\MovieRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use App\ThirdPartyApi\OmdbApiGateway;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 class MovieController extends AbstractController
 {
+    /** @var LoggerInterface */
+    private $logger;
+    /** @var OmdbApiGateway */
+    private $omdbApiGateway;
+
+    public function __construct(LoggerInterface $logger, OmdbApiGateway $omdbApiGateway)
+    {
+        $this->logger = $logger;
+        $this->omdbApiGateway = $omdbApiGateway;
+    }
+
+
     /**
      * @Route("/movies", name="app_list_movies")
      */
@@ -32,8 +46,13 @@ class MovieController extends AbstractController
      */
     public function showMovie(Movie $movie): Response
     {
+        dump($_ENV['OMDB_API_KEY']);
+        dump($_SERVER['OMDB_API_KEY']);
+        dump(env('OMDB_API_KEY')->string());
+        $poster = $this->omdbApiGateway->getPosterByMovieTitle($movie->getTitle());
         return $this->render('movie/show.html.twig', [
             'movie' => $movie,
+            'poster' => $poster
         ]);
     }
 
@@ -48,7 +67,8 @@ class MovieController extends AbstractController
         $movieCreationForm->handleRequest($request);
         if($movieCreationForm->isSubmitted() && $movieCreationForm->isValid()) {
 
-            $this->validator->validate($this->getUser());
+            $this->logger->info('A new movie has been created !');
+//            $this->validator->validate($this->getUser());
 
             $movie = $movieCreationForm->getData();
             $movieRepository->add($movie);
