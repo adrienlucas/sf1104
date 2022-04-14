@@ -43,6 +43,12 @@ class Movie
      */
     private $genre;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="movies")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $createdBy;
+
     public static function makeFromApiResponse(array $apiResult): self
     {
         $movie = new Movie();
@@ -102,6 +108,18 @@ class Movie
     public function setGenre(?Genre $genre): self
     {
         $this->genre = $genre;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }

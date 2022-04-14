@@ -31,11 +31,27 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $adrien = new User();
+        $adrien->setUsername('adrien');
+        $adrien->setPassword($this->hasher->hashPassword($adrien, '1234azerty'));
+        $adrien->setRoles(['ROLE_ADMIN']);
+
+        $manager->persist($adrien);
+
+        $otherUser = new User();
+        $otherUser->setUsername('other');
+        $otherUser->setPassword($this->hasher->hashPassword($otherUser, 'other'));
+        $otherUser->setRoles(['ROLE_ADMIN']);
+
+        $manager->persist($otherUser);
+
         for($i=0;$i<5;$i++) {
             $dummyMovie = new Movie();
             $dummyMovie->setTitle('Dummy '.$i);
             $dummyMovie->setDescription('Dummy description'.$i);
             $dummyMovie->setReleaseDate(new DateTime());
+            $dummyMovie->setCreatedBy($otherUser);
+
             $this->validation($dummyMovie);
             $manager->persist($dummyMovie);
         }
@@ -44,6 +60,7 @@ class AppFixtures extends Fixture
         $matrixMovie->setTitle('The Matrix');
         $matrixMovie->setDescription('Neo learns kung-fu');
         $matrixMovie->setReleaseDate(new \DateTime('1999-03-31'));
+        $matrixMovie->setCreatedBy($adrien);
         $this->validation($matrixMovie);
         $manager->persist($matrixMovie);
 
@@ -56,6 +73,7 @@ class AppFixtures extends Fixture
         $godfatherMovie->setTitle('The Godfather');
         $godfatherMovie->setDescription('De Niro goes bruuuu');
         $godfatherMovie->setReleaseDate(new \DateTime('1972-03-31'));
+        $godfatherMovie->setCreatedBy($adrien);
         $godfatherMovie->setGenre($gangstaGenre);
 
         $this->validation($godfatherMovie);
@@ -71,13 +89,6 @@ class AppFixtures extends Fixture
         $actionGenre->setName('Action');
         $this->validation($actionGenre);
         $manager->persist($actionGenre);
-
-        $adrien = new User();
-        $adrien->setUsername('adrien');
-        $adrien->setPassword($this->hasher->hashPassword($adrien, '1234azerty'));
-        $adrien->setRoles(['ROLE_ADMIN']);
-
-        $manager->persist($adrien);
 
         $manager->flush();
     }
