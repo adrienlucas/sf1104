@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Movie;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,9 +16,16 @@ class AdminController extends AbstractController
     /** @var AuthorizationCheckerInterface */
     private $authorizationChecker;
 
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
+    public function __construct(
+        AuthorizationCheckerInterface $authorizationChecker,
+        EntityManagerInterface $entityManager
+    )
     {
         $this->authorizationChecker = $authorizationChecker;
+        $this->entityManager = $entityManager;
     }
 
 
@@ -27,6 +36,21 @@ class AdminController extends AbstractController
     {
         return $this->render('admin/index.html.twig');
     }
+
+    /**
+     * @Route("/admin/delete-movie/{id}", name="app_admin_delete_movie")
+     * @IsGranted("deletion", subject="movie")
+     */
+    public function deleteMovie(Movie $movie): Response
+    {
+        $this->entityManager->remove($movie);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Movie deleted!');
+
+        return $this->redirectToRoute('app_homepage');
+    }
+
 
     /**
      * @Route("/admin/reset-database", name="app_admin_reset_database")
