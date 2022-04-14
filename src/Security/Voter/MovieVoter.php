@@ -14,8 +14,6 @@ class MovieVoter extends Voter
 
     protected function supports(string $attribute, $subject): bool
     {
-        dump($attribute);
-        dump($subject);
         return $attribute === self::DELETION
             && $subject instanceof Movie;
     }

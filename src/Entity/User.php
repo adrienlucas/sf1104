@@ -43,6 +43,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
      */
     private $movies;
 
+    /**
+     * @var DateTimeInterface
+     */
+    private $lastLogin;
+
     public function __construct()
     {
         $this->movies = new ArrayCollection();

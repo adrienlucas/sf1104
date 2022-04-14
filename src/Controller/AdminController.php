@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\Movie;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class AdminController extends AbstractController
 {
@@ -18,6 +20,8 @@ class AdminController extends AbstractController
 
     /** @var EntityManagerInterface */
     private $entityManager;
+    /** @var CsrfTokenManagerInterface */
+    private $csrfTokenManager;
 
     public function __construct(
         AuthorizationCheckerInterface $authorizationChecker,
@@ -38,11 +42,14 @@ class AdminController extends AbstractController
     }
 
     /**
-     * @Route("/admin/delete-movie/{id}", name="app_admin_delete_movie")
+     * @Route("/admin/delete-movie/{id}/{token}", name="app_admin_delete_movie")
      * @IsGranted("deletion", subject="movie")
      */
-    public function deleteMovie(Movie $movie): Response
+    public function deleteMovie(Movie $movie, string $token): Response
     {
+        if(!$this->csrfTokenManager->isTokenValid(new CsrfToken('delete_'.$movie->getId(), $token)))
+            throw new \RuntimeException('Invalid token');
+
         $this->entityManager->remove($movie);
         $this->entityManager->flush();
 
